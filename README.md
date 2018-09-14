@@ -1,5 +1,4 @@
 # ChainBridge
-Transfering tokens between two chains.
 
 ChainBridge is a system that allows sending tokens between different chains. The system's architecture is described in Figure 1.
 
