@@ -21,4 +21,4 @@ The system is live (for a few days starting on September 14). The addresses of t
 To get tokens you can use the functions buy (for free, just use test Ether).
 
 
-
+The system can be tested using a the app deployed at https://jfdelgad.github.io/ChainBridge/.
