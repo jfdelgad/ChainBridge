@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.4">
+	
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ChainBridge</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
+    <link rel="icon" href=".\images\favicon.png">
+</head>
+
+
+<body>
+
+		<div class="ui fixed inverted back medium menu">
+			<div class="ui container">
+			
+			<a href='' class="item active">ChainBridge</a>
+			</div>
+		</div>
+		
+	<div class="row">
+		<p><br><br><br><br><br><br></p>
+	</div>
+	
+
+	<div class="row">
+		<div class="ui three column grid">
+			
+			<div class="three wide column">
+            </div>
+            
+            
+            <div class="five wide column">
+                <div class="ui raised segment">
+                    <a class="ui orange left ribbon label"><h3> Ropsten </h3></a>
+                    <br><br><br>
+                    <form class="ui compact small form">
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> To </div>
+                                    <input type="text" name="to_rop" placeholder="Address">
+                                </div>
+                            </div>
+                            
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> Amount </div>
+                                    <input type="number" name="amount_rop" placeholder=0 min=0>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <button name="transfer_rop" class="ui fluid teal button" type="button" onclick="transfertorinkeby()">Transfer to Rinkeby</button>	
+                        </div>
+
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> Amount: </div>
+                                    <input type="number" name="amountbuy_rop" placeholder=0 min=0>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="field">
+                                <button name=buy_rop class="ui fluid blue button" type="button" onclick="buyropsten()">Buy Tokens</button>	
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div name="balance_rop" class="ui label"> Balance: 0 Tokens </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            
+    
+            <div class="five wide column">
+                <div class="ui raised segment">
+                    <a class="ui yellow right ribbon label"><h3> Rinkeby </h3></a>
+                    <br><br><br>
+                    <form class="ui compact small form">
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> To </div>
+                                    <input type="text" name="to_rink" placeholder="Address">
+                                </div>
+                            </div>
+                            
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> Amount </div>
+                                    <input type="number" name="amount_rink" placeholder=0 min=0>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="field">
+                            <button name=transfer_rink class="ui fluid teal button" type="button" onclick="transfertoropsten()">Transfer to Ropsten</button>	
+                        </div>
+
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="ui labeled input">
+                                    <div style=width:30% class="ui label"> Amount: </div>
+                                    <input type="number" name="amountbuy_rink" placeholder=0 min=0>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="field">
+                                <button name=buy_rink class="ui fluid blue button" type="button" onclick="buyropsten()">Buy Tokens</button>	
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div name="balance_rink" class="ui label"> Balance: 0 Tokens </div>
+                        </div>
+                    </form>
+                </div>    
+            </div>
+			
+		</div>
+	</div>
+
+	
+
+	
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.css" />
+
+    <script>
+    if (typeof web3 !== 'undefined') {
+		web3 = new Web3(web3.currentProvider);
+		//web3.eth.defaultAccount = web3.eth.accounts[0];
+	} else {
+		alert('Aion requires metamask to function. Please install Metamask extension and try again.')
+		// set the provider you want from Web3.providers
+		web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+	}
+
+	var minBlock = 3800000
+	var currentNetwork = web3.version.network; 
+	var account = web3.eth.accounts[0];		
+	var ABI = [
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balances",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "chaintranferId",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_spender",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "approval",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "currentSupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "tokenPrice",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "buy",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "receiveChainTransfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "appAddress",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "param",
+				"type": "bytes"
+			}
+		],
+		"name": "approveAndCall",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "sell",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "sendChainTransfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "admin",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "interChainFee",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Burn",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "SendChainTransfer",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "ReceiveChainTransfer",
+		"type": "event"
+	}
+]
+    bridge = web3.eth.contract(ABI);
+	bridgeRopsten = bridge.at('0x169bd27cbd9f4bcd1626480cb75f36806f439952')
+    bridgeRinkeby = bridge.at('0xd8ee680167527e39300bc40336cc36ba84d6cba3')
+    
+	var accountInterval = setInterval(function() {
+		account = web3.eth.accounts[0];
+		currentNetwork = web3.version.network;
+		if(currentNetwork==3){
+            console.log(currentNetwork)
+            $('[name=to_rink]')[0].disabled = true;      
+            $('[name=amount_rink]')[0].disabled = true;
+            $('[name=amountbuy_rink]')[0].disabled = true;
+            $('[name=transfer_rink]')[0].disabled = true;
+            $('[name=buy_rink]')[0].disabled = true;
+            $('[name=balance_rink]').text('Balance unavailable')
+
+            $('[name=to_rop]')[0].disabled = false;      
+            $('[name=amount_rop]')[0].disabled = false;
+            $('[name=amountbuy_rop]')[0].disabled = false;
+            $('[name=transfer_rop]')[0].disabled = false;
+            $('[name=buy_rop]')[0].disabled = false;
+            getBalance_rop()
+
+
+        } else if(currentNetwork==4){
+            $('[name=to_rink]')[0].disabled = false;      
+            $('[name=amount_rink]')[0].disabled = false;
+            $('[name=amountbuy_rink]')[0].disabled = false;
+            $('[name=transfer_rink]')[0].disabled = false;
+            $('[name=buy_rink]')[0].disabled = false;
+            getBalance_rink();
+
+            $('[name=to_rop]')[0].disabled = true;      
+            $('[name=amount_rop]')[0].disabled = true;
+            $('[name=amountbuy_rop]')[0].disabled = true;
+            $('[name=transfer_rop]')[0].disabled = true;
+            $('[name=buy_rop]')[0].disabled = true; 
+            $('[name=balance_rop]').text('Balance unavailable');
+
+		} else {
+			alert('Inter Chain Token only worl on Ropten and Rinkeby')
+		}
+	}, 500);
+
+    function transfertorinkeby(){
+        var amount = web3.toBigNumber($('[name=amount_rop]').val()).times(Math.pow(10,18));
+        bridgeRopsten.sendChainTransfer($('[name=to_rop]').val(), amount, {'gas': 200000}, function(err,res){});
+    }
+
+    function transfertoropsten(){
+        var amount = web3.toBigNumber($('[name=amount_rink]').val()).times(Math.pow(10,18));
+        bridgeRinkeby.sendChainTransfer($('[name=to_rink]').val(), amount,{'gas': 200000}, function(err,res){});
+    }
+    
+    function buyrinkeby(){
+        var price = web3.toBigNumber(1000000000000000);
+        var tokenAmount = web3.toBigNumber($('[name=amountbuy_rink]').val())
+        var weiAmount = tokenAmount.times(price) 
+        bridgeRinkeby.buy({'value':weiAmount}, function(err,res){});
+    }
+
+    function buyropsten(){
+        var price = web3.toBigNumber(1000000000000000);
+        var tokenAmount = web3.toBigNumber($('[name=amountbuy_rop]').val())
+        var weiAmount = tokenAmount.times(price) 
+        bridgeRopsten.buy({'value':weiAmount}, function(err,res){});
+    }
+
+    function getBalance_rop(){
+        bridgeRopsten.balances(account,function(err,res){
+            if(!err){
+                $('[name=balance_rop]').text('Balance: ' + res.div(Math.pow(10,18)).toString() + ' Tokens')
+            }
+        })
+    }
+
+    function getBalance_rink(){
+        bridgeRinkeby.balances(account,function(err,res){
+            if(!err){
+                $('[name=balance_rink]').text('Balance: ' + res.div(Math.pow(10,18)).toString() + ' Tokens')
+            }
+        })
+    }
+    </script>
+
+
+
+</body>
+</html>
