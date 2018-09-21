@@ -11,7 +11,7 @@ For private operations, the bridge could be a set of servers (to make the system
 
 The repository shows an example of this using two Ethereum test networks and a centralized node as a bridge (for the sake of the example). A token contract is deployed in Rinkeby and also in Ropsten. The system allows token holders to transfer tokens between Rinkeby and Ropsten, and vice-versa. As the Bridge needs to execute transactions that have cost in the form of gas, the user pays a fee, in tokens, that is deducted from the amount transfered to the other network. The number of tokens remains constant and this is enforced by both smart contracts' logic.
 
-The system is live (for a few days starting on September 14). The addresses of the contracts are:
+The system is live (for a few days starting on September 14, until september 20). The addresses of the contracts are:
 
 | Network | Address|
 |----------|---------|
